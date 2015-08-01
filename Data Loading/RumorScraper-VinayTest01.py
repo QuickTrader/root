@@ -32,4 +32,4 @@ for page_number in range(1, max_pages + 1):
     rumor_dict[page_number] = rumor
 
 ###Now we work with rumor dict which has all our rumors headings and urls for further investigation.
-##I think the headings will be a sql column
+##I think the headings will be a sql column.
