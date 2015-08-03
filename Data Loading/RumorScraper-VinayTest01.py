@@ -4,7 +4,6 @@ import pandas as pd
 import requests as req
 import bs4 as bs
 import string
-import csv
 import pdb
 
 max_pages = 72  # est. via manual checking on website
@@ -80,8 +79,14 @@ for page_number in range(max_pages + 1):
             assert len(rumor['title']) == 15, 'Number of rumor articles seems off; should be 15 per page'
         rumor_dict[page_number] = rumor
 # #This has all the data we need to analyze what's going on (i.e. date, title, text, and tickers listed.)
-#Now have to figure out how to get resulting dict to a readable/csv-friendly or whatever format -
-csvfile = open('testing.csv', 'w')
-writ = csv.DictWriter(csvfile,['title','tickers','text', 'date'])
-writ.writerows(rumor_dict)
-csvfile.close()
+
+#   #Builds a DataFrame
+df = pd.DataFrame(rumor_dict[0])
+for i in range(1, len(list(rumor_dict.keys()))):
+    df = df.append(pd.DataFrame(rumor_dict[i]))
+df.index = pd.DatetimeIndex(df['date'])
+df['text'] = [x.encode('utf-8') for x in df['text']]
+df['title'] = [x.encode('utf-8') for x in df['title']]
+#Can now export to csv (df.to_csv)
+#Will now need a seperate categorizer
+
