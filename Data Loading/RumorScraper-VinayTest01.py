@@ -15,7 +15,6 @@ def pageRumorData(soup):
     rumorHeaders = _rumorScraper(soup)
     print('N rumors per page:', len(rumorHeaders[1]))
     df_dict = {'title': [], 'date': [], 'tickers': [], 'text': []}
-    print (df_dict)
     for i, url in enumerate(rumorHeaders[1]):
         url_soup = bs.BeautifulSoup(req.get(url).text)
         tickers = tuple(_tickerExtractor(url_soup))
