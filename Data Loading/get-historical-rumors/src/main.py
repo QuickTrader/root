@@ -5,17 +5,29 @@ import requests as req
 import bs4 as bs
 import string
 import pdb
+from mysql.local.quicktrader import create_historical_rumors_table
+from yahoo import yahoo_market_cap
+from mergers import merger_info
+from webscraping.benzinga.rumors import find_rumor_info
+
+'''
+merger_article = merger_info.MergerArticleInfo()
+find_rumor_info.record_acquirer_and_acquiree(merger_article, 'GOOG', 'AAPL')
+print (merger.acquirer, merger.acquiree, merger.merger_verified)
+'''
+
+'''
+connection = create_historical_rumors_table.connect_to_quicktrader_db()
+connection.close()
+'''
 
 max_pages = 72  # est. via manual checking on website
-
-# #Define Scraper functions
 
 def pageRumorData(soup):
     assert type(soup) == bs.BeautifulSoup, 'Type Error: Use BeautifulSoup object as input'
     rumorHeaders = _rumorScraper(soup)
-    print('N rumors per page:', len(rumorHeaders[1]))
+    #print('N rumors per page:', len(rumorHeaders[1]))
     df_dict = {'title': [], 'date': [], 'tickers': [], 'text': []}
-    print (df_dict)
     for i, url in enumerate(rumorHeaders[1]):
         url_soup = bs.BeautifulSoup(req.get(url).text)
         tickers = tuple(_tickerExtractor(url_soup))
@@ -27,6 +39,12 @@ def pageRumorData(soup):
         df_dict['date'].append(publish_date)
         df_dict['tickers'].append(tickers)
         df_dict['text'].append(article_text)
+        merger_article = merger_info.MergerArticleInfo(publish_date,article_header,article_text,tickers)
+        merger_article.print_merger_info()
+        '''
+        find_rumor_info.record_acquirer_and_acquiree(merger_article, 'GOOG', 'AAPL')
+        print (merger.acquirer, merger.acquiree, merger.merger_verified)        
+        '''
     return df_dict
 #Write this as a list of dictionaries - then you can use csvrwiter to output as csv
 
