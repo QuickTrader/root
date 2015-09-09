@@ -9,16 +9,12 @@ from mysql.local.quicktrader import create_historical_rumors_table
 from yahoo import yahoo_market_cap
 from mergers import merger_info
 from webscraping.benzinga.rumors import find_rumor_info
+from mysql.local import *
 
 '''
 merger_article = merger_info.MergerArticleInfo()
 find_rumor_info.record_acquirer_and_acquiree(merger_article, 'GOOG', 'AAPL')
 print (merger.acquirer, merger.acquiree, merger.merger_verified)
-'''
-
-'''
-connection = create_historical_rumors_table.connect_to_quicktrader_db()
-connection.close()
 '''
 
 max_pages = 72  # est. via manual checking on website
@@ -41,6 +37,14 @@ def pageRumorData(soup):
         df_dict['text'].append(article_text)
         merger_article = merger_info.MergerArticleInfo(publish_date,article_header,article_text,tickers)
         merger_article.print_merger_info()
+        
+        connection = db_connect.connect_to_db('quicktrader_historical_rumors', 'root', '')
+        cursor = connection.cursor()
+        merger_article.add_to_database(cursor)
+        
+        connection.commit()
+        connection.close()
+        
         '''
         find_rumor_info.record_acquirer_and_acquiree(merger_article, 'GOOG', 'AAPL')
         print (merger.acquirer, merger.acquiree, merger.merger_verified)        
